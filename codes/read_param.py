@@ -81,27 +81,29 @@ from colors_text import TextColor as bcolors
 
 
 class ReadParam:
-    """read all the parameters"""
+    """
+    Reads and stores all the parameters from the parameter file.
+    """
+
     # Name of the parameter file is static
-    fname: str = 'param'
+    FNAME: str = 'param'
     # List of the parameters that should be given to the script
-    parameters: list[str] = \
+    PARAMETERS: list[str] = \
         [
             "width", "height", "num_particles", "particle_radius",
             "particle_mass", "initial_positions", "initial_velocities",
-            "Hamaker_constant", "zeta_potential", "dielectric_constant",
-            "ionic_strength", "Boltzmann_constant", "temperature",
+            "hamaker_constant", "zeta_potential", "dielectric_constant",
+            "ionic_strength", "boltzmann_constant", "temperature",
             "solvent_viscosity", "solvent_density", "time_step",
             "total_steps", "friction_coefficient", "random_force_magnitude"
         ]
-    # To save the parameters read from the file
-    parameters_dict: dict[str, typing.Any] = {}
-
-    info_msg: str = 'Messages from ReadPram:\n'
 
     def __init__(self,
                  log: logger.logging.Logger
                  ) -> None:
+        # To save the parameters read from the file
+        self.parameters_dict: dict[str, typing.Any] = {}
+        self.info_msg: str = 'Messages from ReadPram:\n'
         self.read_parameter_file()
         self.write_log_msg(log)
 
@@ -110,22 +112,14 @@ class ReadParam:
         read parameter file one by one and save it to a dictionary
         """
         # Open the file in read mode
-        with open(self.fname, 'r', encoding='utf8') as f_r:
-            # Read the file line by line until the end
-            while True:
-                line = f_r.readline()
-                # If the line does not start with "@", it is not a
-                # parameter, so skip it.
-                if not line.strip().startswith("@"):
-                    pass
-                else:
-                    # Process the line to extract key-value pair and
-                    key, value = self._process_line(line.strip())
+        with open(self.FNAME, 'r', encoding='utf8') as f_r:
+            for line in f_r:
+                stripped_line = line.strip()
+                if stripped_line.startswith("@"):
+                    key, value = self._process_line(stripped_line)
                     self.parameters_dict[key] = value
-                # If end of file is reached, break the loop
-                if not line:
-                    break
-        self.info_msg += json.dumps(self.parameters_dict, indent=4)
+        self.info_msg += '\tParametrs are:\n'
+        self.info_msg += json.dumps(self.parameters_dict, indent=8)
 
     @staticmethod
     def _process_line(line: str) -> list[typing.Any]:
