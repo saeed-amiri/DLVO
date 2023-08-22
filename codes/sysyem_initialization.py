@@ -2,7 +2,8 @@
 Initializing a 2d system
 """
 import random
-
+import numpy as np
+import scipy.stats
 import matplotlib.pylab as plt
 
 import logger
@@ -48,12 +49,11 @@ class DisplaySystem:
             ax_i.arrow(particle.position[0],
                        particle.position[1],
                        particle.velocity[0] * scale_factor,
-                       particle.velocity[1] * scale_factor, 
+                       particle.velocity[1] * scale_factor,
                        head_width=params['particle_radius']/2,
                        head_length=params['particle_radius']/3,
                        fc='red',
                        ec='red')
-    
 
         # Enhance plot appearance
         ax_i.set_aspect('equal', 'box')
@@ -118,12 +118,28 @@ class TwoDSystem:
     def set_velocities(self,
                        params: dict[str, float]
                        ) -> list[tuple[float, float]]:
-        """set initial velocity for the particles"""
+        """
+        Set initial velocity for the particles using the
+        Maxwell-Boltzmann distribution.
+        """
+        scale_factor = (
+            2 * params['boltzmann_constant'] * params['temperature'] /
+            params['particle_mass'])**0.5
+
         initial_velocities: list[tuple[float, float]] = []
         for _ in range(int(params['num_particles'])):
-            vel_x = random.uniform(0.1, params['initial_velocities'])
-            vel_y = random.uniform(0.1, params['initial_velocities'])
-            initial_velocities.append((vel_x, vel_y))
+            speed = scipy.stats.maxwell.rvs(scale=scale_factor)
+
+            # Assigning a random direction for the speed
+            theta = 2 * np.pi * random.random()  # Random angle in [0, 2*pi]
+            vel_x = speed * np.cos(theta)
+            vel_y = speed * np.sin(theta)
+            # Normalize the velocity to have the magnitude of
+            # params['initial_velocities']
+            magnitude = (vel_x**2 + vel_y**2)**0.5
+            norm_vel_x = (params['initial_velocities'] / magnitude) * vel_x
+            norm_vel_y = (params['initial_velocities'] / magnitude) * vel_y
+            initial_velocities.append((norm_vel_x, norm_vel_y))
         return initial_velocities
 
     def initialize_particles(self,
@@ -132,7 +148,7 @@ class TwoDSystem:
         initial_velocities: list[tuple[float, float]] = \
             self.set_velocities(params)
         particles: list["Particle"] = []
-        occupied_positions: list["Particle"] = []
+        occupied_positions: list[tuple[float, ...]] = []
         for i in range(int(params['num_particles'])):
             while True:
                 # Ensure that the particle is fully inside the 2D system
