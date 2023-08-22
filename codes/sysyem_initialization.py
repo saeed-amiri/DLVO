@@ -42,6 +42,18 @@ class DisplaySystem:
             circle = plt.Circle(particle.position, params['particle_radius'],
                                 color='blue', alpha=0.6, ec='black')
             ax_i.add_patch(circle)
+            # Draw an arrow representing velocity. We scale the arrow
+            # size for better visualization.
+            scale_factor = 0.5
+            ax_i.arrow(particle.position[0],
+                       particle.position[1],
+                       particle.velocity[0] * scale_factor,
+                       particle.velocity[1] * scale_factor, 
+                       head_width=params['particle_radius']/2,
+                       head_length=params['particle_radius']/3,
+                       fc='red',
+                       ec='red')
+    
 
         # Enhance plot appearance
         ax_i.set_aspect('equal', 'box')
@@ -50,7 +62,7 @@ class DisplaySystem:
         ax_i.axvline(x=0, color='k', linestyle='--', linewidth=0.5)
 
         # Display the plot
-        self.save_close_fig(fig_i, ax_i, 'initial_pos.png', legend=True)
+        self.save_close_fig(fig_i, ax_i, 'initial_pos.png', legend=False)
 
     @staticmethod
     def save_close_fig(fig: plt.figure,  # The figure to save,
@@ -72,10 +84,7 @@ class DisplaySystem:
             loc (str, optional): Location of the legend. Default is
             'upper right'.
         """
-        if not legend:
-            legend = axs.legend(loc=loc, bbox_to_anchor=(1.0, 1.0))
-            legend.set_bbox_to_anchor((1.0, 1.0))
-        else:
+        if legend:
             legend = axs.legend(loc=loc)
         fig.savefig(fname,
                     dpi=300,
@@ -127,7 +136,7 @@ class TwoDSystem:
         for i in range(int(params['num_particles'])):
             while True:
                 # Ensure that the particle is fully inside the 2D system
-                # considering its radius
+                # considering its radius and not overlapping
                 pos_x = random.uniform(
                     params['particle_radius'],
                     params['width'] - params['particle_radius'])
