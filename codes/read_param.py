@@ -72,6 +72,11 @@ Simulation Parameters:
 
 """
 
+import typing
+
+import logger
+import my_tools
+from colors_text import TextColor as bcolors
 
 
 class ReadParam:
@@ -88,6 +93,10 @@ class ReadParam:
             "solvent_viscosity", "solvent_density", "time_step",
             "total_steps", "friction_coefficient", "random_force_magnitude"
         ]
+    # To save the parameters read from the file
+    parameters_dict: dict[str, typing.Any] = {}
+
+    info_msg: str = 'Messages from ReadPram:\n'
 
     def __init__(self) -> None:
         self.read_parameter_file()
@@ -96,12 +105,38 @@ class ReadParam:
         """
         read parameter file one by one and save it to a dictionary
         """
-        with open(self.fname, 'r', encoding='utf8') as f_re:
-            line: str = f_re.readlines()
-            while line:
-                print(line)
+        # Open the file in read mode
+        with open(self.fname, 'r', encoding='utf8') as f_r:
+            # Read the file line by line until the end
+            while True:
+                line = f_r.readline()
+                # If the line does not start with "@", it is not a
+                # parameter, so skip it.
+                if not line.strip().startswith("@"):
+                    pass
+                else:
+                    # Process the line to extract key-value pair and
+                    key, value = self._process_line(line.strip())
+                    self.parameters_dict[key] = value
+                # If end of file is reached, break the loop
                 if not line:
                     break
+
+    @staticmethod
+    def _process_line(line: str) -> list[typing.Any]:
+        """break the line and return the key and the value"""
+        line = my_tools.drop_string(line, '@')
+        parts: list[str] = line.split('=')
+        return parts
+
+    def write_log_msg(self,
+                      log: logger.logging.Logger  # Name of the output file
+                      ) -> None:
+        """writing and logging messages from methods"""
+        log.info(self.info_msg)
+        print(f'{bcolors.OKBLUE}{self.__module__}:\n'
+              f'\t{self.info_msg}\n{bcolors.ENDC}')
+
 
 if __name__ == '__main__':
     ReadParam()
