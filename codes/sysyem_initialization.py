@@ -67,20 +67,20 @@ class DisplaySystem:
 
     def plot_velocity_distribution(self, particles: list["Particle"]) -> None:
         """Plotting the distribution of particle velocities."""
+        fig_i, ax_i = plt.subplots(figsize=(10, 10))
 
         # Extracting velocity magnitudes from particles
         velocities = \
             [((particle.velocity[0]**2 + particle.velocity[1]**2)**0.5)
              for particle in particles]
 
-        print(velocities)
         # Create histogram
-        plt.hist(velocities, bins=50, edgecolor='black', alpha=1)
-        plt.title("Particle Velocity Distribution")
-        plt.xlabel("Velocity")
-        plt.ylabel("Number of Particles")
-        plt.grid(True)
-        plt.show()
+        ax_i.hist(velocities, bins=50, edgecolor='black', alpha=1)
+        ax_i.set_title("Particle Velocity Distribution")
+        ax_i.set_xlabel("Velocity")
+        ax_i.set_ylabel("Number of Particles")
+        ax_i.grid(True)
+        self.save_close_fig(fig_i, ax_i, 'velocities_dist.png', legend=False)
 
     @staticmethod
     def save_close_fig(fig: plt.figure,  # The figure to save,
