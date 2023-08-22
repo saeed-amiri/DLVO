@@ -23,6 +23,7 @@ class DisplaySystem:
                  particles: list["Particle"]  # System with their particles
                  ) -> None:
         self.plot_structure(params, particles)
+        self.plot_velocity_distribution(particles)
 
     def plot_structure(self,
                        params: dict[str, float],  # Parameters read from param
@@ -63,6 +64,23 @@ class DisplaySystem:
 
         # Display the plot
         self.save_close_fig(fig_i, ax_i, 'initial_pos.png', legend=False)
+
+    def plot_velocity_distribution(self, particles: list["Particle"]) -> None:
+        """Plotting the distribution of particle velocities."""
+
+        # Extracting velocity magnitudes from particles
+        velocities = \
+            [((particle.velocity[0]**2 + particle.velocity[1]**2)**0.5)
+             for particle in particles]
+
+        print(velocities)
+        # Create histogram
+        plt.hist(velocities, bins=50, edgecolor='black', alpha=1)
+        plt.title("Particle Velocity Distribution")
+        plt.xlabel("Velocity")
+        plt.ylabel("Number of Particles")
+        plt.grid(True)
+        plt.show()
 
     @staticmethod
     def save_close_fig(fig: plt.figure,  # The figure to save,
@@ -127,19 +145,18 @@ class TwoDSystem:
             params['particle_mass'])**0.5
 
         initial_velocities: list[tuple[float, float]] = []
-        for _ in range(int(params['num_particles'])):
-            speed = scipy.stats.maxwell.rvs(scale=scale_factor)
+        all_speeds = [scipy.stats.maxwell.rvs(scale=scale_factor)
+                      for _ in range(int(params['num_particles']))]
 
-            # Assigning a random direction for the speed
-            theta = 2 * np.pi * random.random()  # Random angle in [0, 2*pi]
-            vel_x = speed * np.cos(theta)
-            vel_y = speed * np.sin(theta)
-            # Normalize the velocity to have the magnitude of
-            # params['initial_velocities']
-            magnitude = (vel_x**2 + vel_y**2)**0.5
-            norm_vel_x = (params['initial_velocities'] / magnitude) * vel_x
-            norm_vel_y = (params['initial_velocities'] / magnitude) * vel_y
-            initial_velocities.append((norm_vel_x, norm_vel_y))
+        max_speed = max(all_speeds)
+        normalized_speeds = [speed / max_speed for speed in all_speeds]
+
+        for speed in normalized_speeds:
+            theta = random.uniform(0, 2 * np.pi)
+            vel_x = speed * np.cos(theta) * params['initial_velocities']
+            vel_y = speed * np.sin(theta) * params['initial_velocities']
+            initial_velocities.append((vel_x, vel_y))
+
         return initial_velocities
 
     def initialize_particles(self,
