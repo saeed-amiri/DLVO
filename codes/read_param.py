@@ -72,6 +72,7 @@ Simulation Parameters:
 
 """
 
+import sys
 import json
 import typing
 
@@ -117,9 +118,33 @@ class ReadParam:
                 stripped_line = line.strip()
                 if stripped_line.startswith("@"):
                     key, value = self._process_line(stripped_line)
-                    self.parameters_dict[key] = value
+                    try:
+                        self.parameters_dict[key] = float(value)
+                    except ValueError:
+                        sys.exit(f"{bcolors.FAIL}The vlue for `{key}` is not "
+                                 f"set! Exit! {bcolors.ENDC}\n")
         self.info_msg += '\tParametrs are:\n'
         self.info_msg += json.dumps(self.parameters_dict, indent=8)
+
+    def validate_parameters(self) -> None:
+        """Check if all the listed parameters have been assigned
+        non-empty values."""
+
+        # Check for missing parameters
+        missing_params = \
+            [param for param in self.PARAMETERS if
+             param not in self.parameters_dict]
+        if missing_params:
+            raise ValueError(
+                f"Missing parameter values for: {', '.join(missing_params)}")
+
+        # Check for empty or whitespace-only values
+        empty_values = \
+            [key for key, value in self.parameters_dict.items()
+             if not str(value).strip()]
+        if empty_values:
+            raise ValueError(
+                f"Parameters with empty values: {', '.join(empty_values)}")
 
     @staticmethod
     def _process_line(line: str) -> list[typing.Any]:
