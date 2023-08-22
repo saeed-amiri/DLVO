@@ -3,9 +3,29 @@ Initializing a 2d system
 """
 import random
 
+import matplotlib.pylab as plt
+
 import logger
 from read_param import ReadParam
 from colors_text import TextColor as bcolors
+
+
+class DisplaySystem:
+    """
+    Print a snapshot of the system in its initial conditions
+    """
+
+    def __init__(self,
+                 params: dict[str, float],  # Parameters read from param file
+                 particles: list["Particle"]  # System with their particles
+                 ) -> None:
+        self.plot_structure(params, particles)
+
+    def plot_structure(self,
+                       params: dict[str, float],  # Parameters read from param
+                       particles: list["Particle"]  # System with their particles
+                       ) -> None:
+        """plotting the structure"""
 
 
 class Particle:
@@ -24,6 +44,7 @@ class TwoDSystem:
                  ) -> None:
         self.info_msg: str = 'Messages from TwoDSystem:\n'
         self.particles = self.initialize_particles(params)
+        self.display(params)
         self.write_log_msg(log)
 
     def set_velocities(self,
@@ -58,11 +79,11 @@ class TwoDSystem:
 
         return particles
 
-    def display(self):
+    def display(self,
+                params: dict[str, float]
+                ) -> None:
         """to disply the initial structure"""
-        for particle in self.particles:
-            print(f"Particle -> Position: {particle.position}, "
-                  f"Velocity: {particle.velocity}")
+        DisplaySystem(params, self.particles)
 
     def write_log_msg(self,
                       log: logger.logging.Logger  # Name of the output file
@@ -77,4 +98,3 @@ if __name__ == '__main__':
     LOG = logger.setup_logger(log_name='system_initiat.log')
     parameter = ReadParam(log=LOG)
     system = TwoDSystem(parameter.parameters_dict, log=LOG)
-    system.display()
