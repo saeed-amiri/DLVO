@@ -122,20 +122,32 @@ class TwoDSystem:
         """initial particles"""
         initial_velocities: list[tuple[float, float]] = \
             self.set_velocities(params)
-        particles = []
+        particles: list["Particle"] = []
+        occupied_positions: list["Particle"] = []
         for i in range(int(params['num_particles'])):
-            # Ensure that the particle is fully inside the 2D system
-            # considering its radius
-            pos_x = \
-                random.uniform(params['particle_radius'],
-                               params['width'] - params['particle_radius'])
-            pos_y = \
-                random.uniform(params['particle_radius'],
-                               params['height'] - params['particle_radius'])
+            while True:
+                # Ensure that the particle is fully inside the 2D system
+                # considering its radius
+                pos_x = random.uniform(
+                    params['particle_radius'],
+                    params['width'] - params['particle_radius'])
+                pos_y = random.uniform(
+                    params['particle_radius'],
+                    params['height'] - params['particle_radius'])
+                overlap_flag: bool = False
+                for existing_pos in occupied_positions:
+                    distance = \
+                        ((pos_x - existing_pos[0])**2 +
+                         (pos_y - existing_pos[1])**2)**0.5
+                    if distance < 2 * params['particle_radius']:
+                        overlap_flag = True
+                        break
+                if not overlap_flag:
+                    occupied_positions.append((pos_x, pos_y))
+                    break
 
             particle = Particle((pos_x, pos_y), initial_velocities[i])
             particles.append(particle)
-
         return particles
 
     def display(self,
