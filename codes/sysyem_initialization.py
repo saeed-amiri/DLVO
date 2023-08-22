@@ -15,6 +15,8 @@ class DisplaySystem:
     Print a snapshot of the system in its initial conditions
     """
 
+    transparent: bool = False  # In saving the fig
+
     def __init__(self,
                  params: dict[str, float],  # Parameters read from param file
                  particles: list["Particle"]  # System with their particles
@@ -23,9 +25,66 @@ class DisplaySystem:
 
     def plot_structure(self,
                        params: dict[str, float],  # Parameters read from param
-                       particles: list["Particle"]  # System with their particles
+                       particles: list["Particle"]  # System with particles
                        ) -> None:
         """plotting the structure"""
+
+        # Set up the plot with the given dimensions
+        fig_i, ax_i = plt.subplots(figsize=(10, 10))
+        ax_i.set_xlim(0, params['width'])
+        ax_i.set_ylim(0, params['height'])
+        ax_i.set_xlabel("X-axis")
+        ax_i.set_ylabel("Y-axis")
+        ax_i.set_title("Initial Positions of Particles in 2D System")
+
+        # Plot each particle
+        for particle in particles:
+            circle = plt.Circle(particle.position, params['particle_radius'],
+                                color='blue', alpha=0.6, ec='black')
+            ax_i.add_patch(circle)
+
+        # Enhance plot appearance
+        ax_i.set_aspect('equal', 'box')
+        ax_i.grid(True, which='both', linestyle='--', linewidth=0.5)
+        ax_i.axhline(y=0, color='k', linestyle='--', linewidth=0.5)
+        ax_i.axvline(x=0, color='k', linestyle='--', linewidth=0.5)
+
+        # Display the plot
+        self.save_close_fig(fig_i, ax_i, 'initial_pos.png', legend=True)
+
+    @staticmethod
+    def save_close_fig(fig: plt.figure,  # The figure to save,
+                       axs: plt.axes,  # Axes to plot
+                       fname: str,  # Name of the output for the fig
+                       legend=True,
+                       loc: str = 'upper right',  # Location of the legend
+                       transparent=False,
+                       ) -> None:
+        """
+        Save the figure and close it.
+
+        This method saves the given figure and closes it after saving.
+
+        Args:
+            fig (plt.figure): The figure to save.
+            axs (plt.axes): The axes to plot.
+            fname (str): Name of the output file for the figure.
+            loc (str, optional): Location of the legend. Default is
+            'upper right'.
+        """
+        if not legend:
+            legend = axs.legend(loc=loc, bbox_to_anchor=(1.0, 1.0))
+            legend.set_bbox_to_anchor((1.0, 1.0))
+        else:
+            legend = axs.legend(loc=loc)
+        fig.savefig(fname,
+                    dpi=300,
+                    pad_inches=0.1,
+                    edgecolor='auto',
+                    bbox_inches='tight',
+                    transparent=transparent
+                    )
+        plt.close(fig)
 
 
 class Particle:
