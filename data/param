@@ -1,0 +1,57 @@
+
+Width of the 2D system.
+@width=1
+
+Height of the 2D system.
+@height=2
+
+The total number of particles in your 2D system.
+@num_particles=3
+
+Radius of the particles. If they vary in size,
+@particle_radius=4
+
+Mass of the particles, if considering dynamics.
+@particle_mass=5
+
+Initial positions of particles.
+@initial_positions=6
+
+Initial velocities of particles.
+@initial_velocities=7
+
+Represents the strength of the van der Waals.
+@hamaker_constant=8
+
+Surface potential.
+@zeta_potential=9
+
+Dielectric constant of the medium.
+@dielectric_constant=10
+
+Measure of the concentration of ions
+@ionic_strength=11
+
+Physical constant representing the relation
+@boltzmann_constant=12
+
+Temperature of the system in Kelvin.
+@temperature=13
+
+The viscosity of the solvent
+@solvent_viscosity=14
+
+Density of the solvent.
+@solvent_density=15
+
+The size of the simulation time step.
+@time_step=16
+
+Total number of steps the simulation
+@total_steps=17
+
+If including Langevin dynamics to simulate
+@friction_coefficient=18
+
+Magnitude of random forces
+@random_force_magnitude=19
