@@ -5,6 +5,7 @@ import random
 
 import logger
 from read_param import ReadParam
+from colors_text import TextColor as bcolors
 
 
 class Particle:
@@ -18,11 +19,12 @@ class TwoDSystem:
     """prepare a 2d system"""
 
     def __init__(self,
-                 params: dict[str, float]
+                 params: dict[str, float],
+                 log: logger.logging.Logger
                  ) -> None:
-        self.initial_velocities = self.set_velocities(params)
+        self.info_msg: str = 'Messages from TwoDSystem:\n'
         self.particles = self.initialize_particles(params)
-
+        self.write_log_msg(log)
 
     def set_velocities(self,
                        params: dict[str, float]
@@ -38,6 +40,8 @@ class TwoDSystem:
     def initialize_particles(self,
                              params) -> list["Particle"]:
         """initial particles"""
+        initial_velocities: list[tuple[float, float]] = \
+            self.set_velocities(params)
         particles = []
         for i in range(int(params['num_particles'])):
             # Ensure that the particle is fully inside the 2D system
@@ -49,7 +53,7 @@ class TwoDSystem:
                 random.uniform(params['particle_radius'],
                                params['height'] - params['particle_radius'])
 
-            particle = Particle((pos_x, pos_y), self.initial_velocities[i])
+            particle = Particle((pos_x, pos_y), initial_velocities[i])
             particles.append(particle)
 
         return particles
@@ -60,9 +64,17 @@ class TwoDSystem:
             print(f"Particle -> Position: {particle.position}, "
                   f"Velocity: {particle.velocity}")
 
+    def write_log_msg(self,
+                      log: logger.logging.Logger  # Name of the output file
+                      ) -> None:
+        """writing and logging messages from methods"""
+        log.info(self.info_msg)
+        print(f'{bcolors.OKBLUE}{self.__module__}:\n'
+              f'\t{self.info_msg}\n{bcolors.ENDC}')
+
 
 if __name__ == '__main__':
-    parameter = \
-        ReadParam(log=logger.setup_logger(log_name='system_initiat.log'))
-    system = TwoDSystem(parameter.parameters_dict)
+    LOG = logger.setup_logger(log_name='system_initiat.log')
+    parameter = ReadParam(log=LOG)
+    system = TwoDSystem(parameter.parameters_dict, log=LOG)
     system.display()
