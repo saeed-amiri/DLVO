@@ -72,6 +72,7 @@ Simulation Parameters:
 
 """
 
+import json
 import typing
 
 import logger
@@ -98,8 +99,11 @@ class ReadParam:
 
     info_msg: str = 'Messages from ReadPram:\n'
 
-    def __init__(self) -> None:
+    def __init__(self,
+                 log: logger.logging.Logger
+                 ) -> None:
         self.read_parameter_file()
+        self.write_log_msg(log)
 
     def read_parameter_file(self) -> None:
         """
@@ -121,6 +125,7 @@ class ReadParam:
                 # If end of file is reached, break the loop
                 if not line:
                     break
+        self.info_msg += json.dumps(self.parameters_dict, indent=4)
 
     @staticmethod
     def _process_line(line: str) -> list[typing.Any]:
@@ -139,4 +144,4 @@ class ReadParam:
 
 
 if __name__ == '__main__':
-    ReadParam()
+    ReadParam(log=logger.setup_logger(log_name='read_param.log'))
