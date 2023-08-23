@@ -1,6 +1,7 @@
 """
 Initializing a 2d system
 """
+import sys
 import random
 import numpy as np
 import scipy.stats
@@ -129,7 +130,7 @@ class TwoDSystem:
                  log: logger.logging.Logger
                  ) -> None:
         self.info_msg: str = 'Messages from TwoDSystem:\n'
-        self.particles = self.initialize_particles(params)
+        self.particles = self.initialize_particles(params, log)
         self.display(params)
         self.write_log_msg(log)
 
@@ -160,33 +161,47 @@ class TwoDSystem:
         return initial_velocities
 
     def initialize_particles(self,
-                             params) -> list["Particle"]:
+                             params,
+                             log: logger.logging.Logger
+                             ) -> list["Particle"]:
         """initial particles"""
         initial_velocities: list[tuple[float, float]] = \
             self.set_velocities(params)
         particles: list["Particle"] = []
-        occupied_positions: list[tuple[float, ...]] = []
+        occupied_positions: list[tuple[float, float]] = []
+        max_try: int = 100  # Maximumn number to try to find a place
         for i in range(int(params['num_particles'])):
+            try_i = 0
             while True:
-                # Ensure that the particle is fully inside the 2D system
-                # considering its radius and not overlapping
-                pos_x = random.uniform(
-                    params['particle_radius'],
-                    params['width'] - params['particle_radius'])
-                pos_y = random.uniform(
-                    params['particle_radius'],
-                    params['height'] - params['particle_radius'])
-                overlap_flag: bool = False
-                for existing_pos in occupied_positions:
-                    distance = \
-                        ((pos_x - existing_pos[0])**2 +
-                         (pos_y - existing_pos[1])**2)**0.5
-                    if distance < 2 * params['particle_radius']:
-                        overlap_flag = True
+                if try_i < max_try:
+                    # Ensure that the particle is fully inside the 2D system
+                    # considering its radius and not overlapping
+                    pos_x = random.uniform(
+                        params['particle_radius'],
+                        params['width'] - params['particle_radius'])
+                    pos_y = random.uniform(
+                        params['particle_radius'],
+                        params['height'] - params['particle_radius'])
+                    overlap_flag: bool = False
+                    for existing_pos in occupied_positions:
+                        distance = \
+                            ((pos_x - existing_pos[0])**2 +
+                             (pos_y - existing_pos[1])**2)**0.5
+                        if distance < 2 * params['particle_radius']:
+                            overlap_flag = True
+                            break
+                    if not overlap_flag:
+                        occupied_positions.append((pos_x, pos_y))
                         break
-                if not overlap_flag:
-                    occupied_positions.append((pos_x, pos_y))
-                    break
+                    try_i += 1
+                else:
+                    err_msg: str = ('The numbers of try excceded the max '
+                                    f'limit: {max_try}.\n\tReduce the numbers'
+                                    ' of particles or increase the size of '
+                                    'the system!\n')
+                    log.error(f'{err_msg}')
+                    sys.exit(f'{bcolors.FAIL}{self.__module__}\n\tError! '
+                             f'{err_msg}{bcolors.ENDC}')
 
             particle = Particle((pos_x, pos_y), initial_velocities[i])
             particles.append(particle)
