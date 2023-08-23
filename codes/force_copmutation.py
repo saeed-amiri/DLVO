@@ -16,7 +16,7 @@ profiles with respect to distance.
 import typing
 import numpy as np
 if typing.TYPE_CHECKING:
-    from sysyem_initialization import Particle
+    from system_initialization import Particle
 
 
 class DLVO:
