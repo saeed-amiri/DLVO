@@ -1,16 +1,22 @@
 """
 Initializing a 2d system
 """
-import sys
+
 import random
+from dataclasses import dataclass
 import numpy as np
 import scipy.stats
 import matplotlib.pylab as plt
-from dataclasses import dataclass
 
 import logger
 from read_param import ReadParam
 from colors_text import TextColor as bcolors
+
+
+# Custom exception for particle overlap
+class ParticleOverlapError(Exception):
+    """Raised when particles overlap after maximum placement attempts."""
+    pass
 
 
 class DisplaySystem:
@@ -200,9 +206,9 @@ class TwoDSystem:
                                     f'limit: {max_try}.\n\tReduce the numbers'
                                     ' of particles or increase the size of '
                                     'the system!\n')
-                    log.error(f'{err_msg}')
-                    sys.exit(f'{bcolors.FAIL}{self.__module__}\n\tError! '
-                             f'{err_msg}{bcolors.ENDC}')
+                    log.error(err_msg)
+                    raise ParticleOverlapError(f'\n\t{bcolors.FAIL}{err_msg}'
+                                               f'{bcolors.ENDC}')
 
             particle = Particle((pos_x, pos_y), initial_velocities[i])
             particles.append(particle)
