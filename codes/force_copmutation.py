@@ -53,7 +53,7 @@ class DLVO:
         self.psi = params['zeta_potential']
         self.kappa = params['ionic_strength']**0.5  # Inverse Debye length
         self.radius = params['particle_radius']
-        self.compute_forces(particles)
+        self.forces = self.compute_forces(particles)
 
     def _vdw_force(self,
                    sep_distance: float  # Separation between particles
@@ -137,3 +137,35 @@ class DLVO:
         forces: np.ndarray = np.sum(force_magnitudes[:, :, np.newaxis] *
                                     force_directions, axis=1)
         return forces
+
+def test_dlvo_class() -> None:
+    """ Define test class"""
+
+    @dataclass
+    class TestParticle:
+        """define particles"""
+        position: tuple[float, float]
+        velocity: tuple[float, float]
+
+    # Initialize DLVO
+    params: dict[str, float] = {
+        'hamaker_constant': 1e-20,
+        'dielectric_constant': 80.8,
+        'zeta_potential': -25e-3,  # Surface potential
+        'ionic_strength': 1,
+        'particle_radius': 1
+    }
+
+    # Two particles located at different positions
+    particle1 = TestParticle(position=(1, 1), velocity=(0, 0))
+    particle2 = TestParticle(position=(2, 1), velocity=(0, 0))
+    particle3 = TestParticle(position=(2, 2), velocity=(0, 0))
+
+    # Compute DLVO forces between the two particles
+    dlvo = DLVO(params, [particle1, particle2, particle3])
+    print(dlvo.forces)
+
+
+if __name__ == "__main__":
+    from dataclasses import dataclass
+    test_dlvo_class()
