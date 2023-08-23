@@ -1,5 +1,7 @@
 """
-Initializing a 2d system
+This script initializes and displays a 2D system of particles. 
+It sets their initial positions and velocities, visualizes their
+distribution, and logs system-related messages.
 """
 
 import random
@@ -21,7 +23,7 @@ class ParticleOverlapError(Exception):
 
 class DisplaySystem:
     """
-    Print a snapshot of the system in its initial conditions
+    Handles the visualization aspects of the 2D particle system.
     """
 
     TRANSPARENT: bool = False  # In saving the fig
@@ -37,7 +39,9 @@ class DisplaySystem:
                                   params: dict[str, float],  # Parameters
                                   particles: list["Particle"]  # System atoms
                                   ) -> None:
-        """plotting the structure"""
+        """
+        Visualize the initial positions and velocities of the particles.
+        """
 
         # Set up the plot with the given dimensions
         fig_i, ax_i = plt.subplots(figsize=(10, 10))
