@@ -24,7 +24,7 @@ class DisplaySystem:
     Print a snapshot of the system in its initial conditions
     """
 
-    transparent: bool = False  # In saving the fig
+    TRANSPARENT: bool = False  # In saving the fig
 
     def __init__(self,
                  params: dict[str, float],  # Parameters read from param file
@@ -92,8 +92,9 @@ class DisplaySystem:
         ax_i.grid(True)
         self.save_close_fig(fig_i, ax_i, 'velocities_dist.png', legend=False)
 
-    @staticmethod
-    def save_close_fig(fig: plt.figure,  # The figure to save,
+    @classmethod
+    def save_close_fig(cls,
+                       fig: plt.figure,  # The figure to save,
                        axs: plt.axes,  # Axes to plot
                        fname: str,  # Name of the output for the fig
                        legend=True,
@@ -119,7 +120,7 @@ class DisplaySystem:
                     pad_inches=0.1,
                     edgecolor='auto',
                     bbox_inches='tight',
-                    transparent=transparent
+                    transparent=cls.TRANSPARENT
                     )
         plt.close(fig)
 
