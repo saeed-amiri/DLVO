@@ -82,7 +82,41 @@ class DLVO:
     def compute_forces(self,
                        particles: list["Particle"]  # Particles
                        ):
-        """Compute the pairwise DLVO forces on each particle."""
+        """
+    Compute the pairwise DLVO forces for a list of particles.
+
+    Algorithm:
+        1. Extract particle positions and form a 2D array of shape
+           (N, N, 2), where N is the number of particles.
+        2. Compute the pairwise position differences, delta, between
+           all particles.
+        3. Calculate the Euclidean distances between all particle pairs
+           using the delta array.
+        4. Subtract twice the particle radius from the distances to get
+           the distances between particle surfaces.
+        5. Create a mask to avoid computing self-interaction (force of
+           a particle on itself).
+        6. Using the surface distances and the mask, calculate the DLVO
+           force magnitudes between particle pairs.
+        7. Determine the direction of the force for each particle pair
+           using the delta and distance arrays.
+        8. Multiply the force magnitudes by their respective directions
+           to obtain force vectors.
+        9. Sum the force vectors for each particle to get the net force
+           due to all other particles.
+
+    Args:
+        particles (list): List of particles with positions, where each
+                           particle is expected to have a 'position'
+                           attribute.
+
+    Returns:
+        np.ndarray: A 2D numpy array of shape (N, 2), where N is the
+                    number of particles.
+                    Each row represents the net DLVO force (in x and y
+                    directions) on a particle due to all other
+                    particles.
+    """
         positions = np.array([particle.position for particle in particles])
         delta: np.ndarray = \
             positions[:, np.newaxis, :] - positions[np.newaxis, :, :]
