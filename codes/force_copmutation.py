@@ -46,14 +46,14 @@ class DLVO:
     """
     def __init__(self,
                  params: dict[str, float],  # Parameters
-                 particles: list["Particle"]  # Particles
+                 particles: list["typing.Union[Particle, typing.Any]"]
                  ) -> None:
-        self.hamaker = params['hamaker_constant']
-        self.epsilon = params['dielectric_constant']
-        self.psi = params['zeta_potential']
-        self.kappa = params['ionic_strength']**0.5  # Inverse Debye length
-        self.radius = params['particle_radius']
-        self.forces = self.compute_forces(particles)
+        self.hamaker: float = params['hamaker_constant']
+        self.epsilon: float = params['dielectric_constant']
+        self.psi: float = params['zeta_potential']
+        self.kappa: float = params['ionic_strength']**0.5  # (Debyelength)^-1
+        self.radius: float = params['particle_radius']
+        self.forces: float = self.compute_forces(particles)
 
     def _vdw_force(self,
                    sep_distance: float  # Separation between particles
@@ -65,7 +65,7 @@ class DLVO:
 
     def _electrostatic_force(self,
                              sep_distance: float  # Separation between particle
-                             ) -> float:
+                             ) -> np.float64:
         """Electrostatic force for a given separation sep_distance."""
         exp_term: np.float64 = \
             np.exp(-self.kappa * (sep_distance - 2 * self.radius))
@@ -74,13 +74,13 @@ class DLVO:
 
     def total_force(self,
                     sep_distance: float  # Separation between particles
-                    ) -> float:
+                    ) -> np.float64:
         """Total DLVO force for a given separation sep_distance."""
         return self._vdw_force(sep_distance) + \
             self._electrostatic_force(sep_distance)
 
     def compute_forces(self,
-                       particles: list["Particle"]  # Particles
+                       particles: list["typing.Union[Particle, typing.Any]"]
                        ):
         """
     Compute the pairwise DLVO forces for a list of particles.
