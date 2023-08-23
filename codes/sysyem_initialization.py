@@ -30,13 +30,13 @@ class DisplaySystem:
                  params: dict[str, float],  # Parameters read from param file
                  particles: list["Particle"]  # System with their particles
                  ) -> None:
-        self.plot_structure(params, particles)
-        self.plot_velocity_distribution(particles)
+        self.display_initial_structure(params, particles)
+        self.display_velocity_histogram(particles)
 
-    def plot_structure(self,
-                       params: dict[str, float],  # Parameters read from param
-                       particles: list["Particle"]  # System with particles
-                       ) -> None:
+    def display_initial_structure(self,
+                                  params: dict[str, float],  # Parameters
+                                  particles: list["Particle"]  # System atoms
+                                  ) -> None:
         """plotting the structure"""
 
         # Set up the plot with the given dimensions
@@ -73,7 +73,9 @@ class DisplaySystem:
         # Display the plot
         self.save_close_fig(fig_i, ax_i, 'initial_pos.png', legend=False)
 
-    def plot_velocity_distribution(self, particles: list["Particle"]) -> None:
+    def display_velocity_histogram(self,
+                                   particles: list["Particle"]
+                                   ) -> None:
         """Plotting the distribution of particle velocities."""
         fig_i, ax_i = plt.subplots(figsize=(10, 10))
 
@@ -137,13 +139,13 @@ class TwoDSystem:
                  log: logger.logging.Logger
                  ) -> None:
         self.info_msg: str = 'Messages from TwoDSystem:\n'
-        self.particles = self.initialize_particles(params, log)
-        self.display(params)
+        self.particles = self.generate_particles(params, log)
+        self.display_system_state(params)
         self.write_log_msg(log)
 
-    def set_velocities(self,
-                       params: dict[str, float]
-                       ) -> list[tuple[float, float]]:
+    def generate_initial_velocities(self,
+                                    params: dict[str, float]
+                                    ) -> list[tuple[float, float]]:
         """
         Set initial velocity for the particles using the
         Maxwell-Boltzmann distribution.
@@ -167,13 +169,13 @@ class TwoDSystem:
 
         return initial_velocities
 
-    def initialize_particles(self,
-                             params,
-                             log: logger.logging.Logger
-                             ) -> list["Particle"]:
+    def generate_particles(self,
+                           params,
+                           log: logger.logging.Logger
+                           ) -> list["Particle"]:
         """initial particles"""
         initial_velocities: list[tuple[float, float]] = \
-            self.set_velocities(params)
+            self.generate_initial_velocities(params)
         particles: list["Particle"] = []
         occupied_positions: list[tuple[float, float]] = []
         max_try: int = 100  # Maximumn number to try to find a place
@@ -214,9 +216,9 @@ class TwoDSystem:
             particles.append(particle)
         return particles
 
-    def display(self,
-                params: dict[str, float]
-                ) -> None:
+    def display_system_state(self,
+                             params: dict[str, float]
+                             ) -> None:
         """to disply the initial structure"""
         DisplaySystem(params, self.particles)
 
