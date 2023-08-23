@@ -6,6 +6,7 @@ import random
 import numpy as np
 import scipy.stats
 import matplotlib.pylab as plt
+from dataclasses import dataclass
 
 import logger
 from read_param import ReadParam
@@ -115,11 +116,11 @@ class DisplaySystem:
         plt.close(fig)
 
 
+@dataclass
 class Particle:
-    """set the position and velocity"""
-    def __init__(self, position, velocity):
-        self.position = position
-        self.velocity = velocity
+    """Represents a particle in the system."""
+    position: tuple[float, float]
+    velocity: tuple[float, float]
 
 
 class TwoDSystem:
