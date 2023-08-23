@@ -15,12 +15,35 @@ profiles with respect to distance.
 
 import typing
 import numpy as np
+
 if typing.TYPE_CHECKING:
     from system_initialization import Particle
 
 
 class DLVO:
-    """calculate forces on DLVO model"""
+    """
+    A class representing the DLVO interactions.
+
+    The DLVO theory describes the interaction between charged particles
+    in a colloidal system.
+    The total interaction potential is the sum of the van der Waals
+    attraction and the electrostatic repulsion between the charged
+    particles.
+
+    Attributes:
+        hamaker(float): Hamaker constant representing van der Waals
+                        interactions.
+        epsilon (float): Dielectric constant of the medium.
+        psi (float): Surface potential, representing charge on particle's
+                     surface.
+        kappa (float): Inverse Debye length, related to ionic strength
+                       of medium.
+        a (float): Particle radius.
+
+    Methods:
+        compute_forces(particles: list) -> np.ndarray:
+            Computes the pairwise DLVO forces on each particle.
+    """
     def __init__(self,
                  params: dict[str, float],  # Parameters
                  particles: list["Particle"]  # Particles
