@@ -126,11 +126,13 @@ class DLVO:
         # Mask to avoid self-interaction
         mask: np.ndarray = np.identity(len(particles)) == 0
 
-        # Calculate force magnitudes
+        # Calculate force magnitudes by
+        # applying the DLVO force function across the array:
         force_magnitudes: np.ndarray = \
             np.vectorize(self.total_force)(surface_distances) * mask
 
-        # Determine force directions & calculate force vectors
+        # Determine force directions & calculate force vectors,
+        # handle divisions by zero during normalization:
         with np.errstate(divide='ignore', invalid='ignore'):
             force_directions = delta / distances[:, :, np.newaxis]
             force_directions[~np.isfinite(force_directions)] = 0
