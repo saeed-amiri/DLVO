@@ -1,3 +1,54 @@
+"""
+ParticleIntegrator is responsible for integrating the equations of
+motion for a system of particles.
+
+This class employs the Velocity Verlet integration scheme to update
+particle velocities and positions over a specified number of time steps.
+It also takes into account periodic boundary conditions for the
+particles within a defined space.
+
+The update mechanism is broken down into modular methods for clarity
+and maintainability:
+    - Half-velocities and positions are first computed.
+    - Using the half-velocities, DLVO forces, and boundary conditions,
+      new velocities are then calculated.
+    - Finally, a new structure of updated particles is generated.
+
+Attributes:
+    delta_t (float): The time step for integration.
+    mass (float): Mass of the particles.
+
+Methods:
+    update_system: Orchestrates the particle updating process across
+                   the total number of time steps.
+    _compute_half_velocities_and_positions: Determines intermediate
+                                            velocities and new positions
+                                            for particles.
+    _compute_new_velocities: Calculates new velocities based on DLVO
+                             forces and half-velocities.
+    _update_particle_structure: Constructs a new list of particle
+                                objects with updated positions and
+                                velocities.
+    _update_velocity: Computes velocity updates based on DLVO forces.
+    velocity_verlet: Performs the Velocity Verlet integration.
+    _compute_new_position: Computes new positions for particles,
+                           respecting the boundary conditions.
+
+Example:
+    params = {
+        "time_step": 0.01,
+        "particle_mass": 1.0,
+        "total_steps": 100,
+        "particle_radius": 0.5,
+        "width": 10,
+        "height": 10
+    }
+    particles = [Particle((1,1), (0,0)), Particle((2,2), (0,0))]
+    forces = np.array([[0, 0], [0, 0]])
+    
+    integrator = ParticleIntegrator(params, particles, forces)
+"""
+
 import numpy as np
 import force_copmutation
 from system_initialization import Particle, DisplaySystem
