@@ -55,7 +55,7 @@ class DLVO:
         self.radius: float = params['particle_radius']
         self.box_dimensions: tuple[float, float] = \
             (params['width'], params['height'])
-        self.forces: float = self.compute_forces(particles)
+        self.forces: np.ndarray = self.compute_forces(particles)
 
     def _vdw_force(self,
                    sep_distance: float  # Separation between particles
@@ -83,7 +83,7 @@ class DLVO:
 
     def compute_forces(self,
                        particles: list["typing.Union[Particle, typing.Any]"]
-                       ):
+                       ) -> np.ndarray:
         """
     Compute the pairwise DLVO forces for a list of particles.
 
