@@ -53,6 +53,8 @@ class DLVO:
         self.psi: float = params['zeta_potential']
         self.kappa: float = params['ionic_strength']**0.5  # (Debyelength)^-1
         self.radius: float = params['particle_radius']
+        self.box_dimensions: tuple[float, float] = \
+            (params['width'], params['height'])
         self.forces: float = self.compute_forces(particles)
 
     def _vdw_force(self,
@@ -120,6 +122,16 @@ class DLVO:
         positions = np.array([particle.position for particle in particles])
         delta: np.ndarray = \
             positions[:, np.newaxis, :] - positions[np.newaxis, :, :]
+        # Apply the minimum image convention for a rectangular box:
+        if self.box_dimensions is not None:
+            for dim in range(2):  # 2 for x and y dimensions
+                half_box = self.box_dimensions[dim] / 2
+                delta[:, :, dim][delta[:, :, dim] > half_box] -= \
+                    self.box_dimensions[dim]
+                delta[:, :, dim][delta[:, :, dim] < -half_box] += \
+                    self.box_dimensions[dim]
+
+
         distances: np.ndarray = np.linalg.norm(delta, axis=-1)
         surface_distances: np.ndarray = distances - 2 * self.radius
 
