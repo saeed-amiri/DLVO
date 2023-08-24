@@ -22,7 +22,7 @@ class ParticleIntegrator:
 
     def update_system(self,
                       params: dict[str, float],  # All the parameters
-                      particles: "list[Particle]",
+                      particles: list["Particle"],
                       forces: np.ndarray
                       ) -> None:
         """Update system of particles using Velocity Verlet integration."""
