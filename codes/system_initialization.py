@@ -26,12 +26,12 @@ class DisplaySystem:
     Handles the visualization aspects of the 2D particle system.
     """
 
-    TRANSPARENT: bool = False  # In saving the fig
-
     def __init__(self,
                  params: dict[str, float],  # Parameters read from param file
-                 particles: list["Particle"]  # System with their particles
+                 particles: list["Particle"],  # System with their particles
+                 out_label: str = 'frame_i'  # Initiate of the output name
                  ) -> None:
+        self.out_label: str = out_label
         self.display_initial_structure(params, particles)
         self.display_velocity_histogram(particles)
 
@@ -58,7 +58,7 @@ class DisplaySystem:
             ax_i.add_patch(circle)
             # Draw an arrow representing velocity. We scale the arrow
             # size for better visualization.
-            scale_factor = 0.5
+            scale_factor = 5e-3
             ax_i.arrow(particle.position[0],
                        particle.position[1],
                        particle.velocity[0] * scale_factor,
@@ -75,7 +75,8 @@ class DisplaySystem:
         ax_i.axvline(x=0, color='k', linestyle='--', linewidth=0.5)
 
         # Display the plot
-        self.save_close_fig(fig_i, ax_i, 'initial_pos.png', legend=False)
+        self.save_close_fig(
+            fig_i, ax_i, f'{self.out_label}_struc.png', legend=False)
 
     def display_velocity_histogram(self,
                                    particles: list["Particle"]
@@ -94,7 +95,8 @@ class DisplaySystem:
         ax_i.set_xlabel("Velocity")
         ax_i.set_ylabel("Number of Particles")
         ax_i.grid(True)
-        self.save_close_fig(fig_i, ax_i, 'velocities_dist.png', legend=False)
+        self.save_close_fig(
+            fig_i, ax_i, f'{self.out_label}_velo_dist.png', legend=False)
 
     @classmethod
     def save_close_fig(cls,
@@ -124,7 +126,7 @@ class DisplaySystem:
                     pad_inches=0.1,
                     edgecolor='auto',
                     bbox_inches='tight',
-                    transparent=cls.TRANSPARENT
+                    transparent=transparent
                     )
         plt.close(fig)
 
