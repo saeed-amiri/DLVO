@@ -51,7 +51,8 @@ Example:
 
 import numpy as np
 import force_copmutation
-from system_initialization import Particle, DisplaySystem
+from system_initialization import Particle
+from display_structures import DisplaySystem
 
 
 class ParticleIntegrator:
@@ -73,6 +74,7 @@ class ParticleIntegrator:
                       ) -> None:
         """Update system of particles using Velocity Verlet integration."""
         for t_step in range(int(params['total_steps'])):
+            print(t_step)
             hlf_vels, new_pos = \
                 self._compute_half_velocities_and_positions(
                     particles, forces, params)
