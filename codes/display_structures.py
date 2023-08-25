@@ -103,7 +103,7 @@ class DisplaySystem:
             else:
                 head_width = params['particle_radius']/2
                 head_length = params['particle_radius']/3
-                
+
             scale_factor = 5e-3
             ax_i.arrow(particle.position[0],
                        particle.position[1],
@@ -144,9 +144,8 @@ class DisplaySystem:
         self.save_close_fig(
             fig_i, ax_i, f'{self.out_label}_velo_dist.png', legend=False)
 
-    @classmethod
-    def save_close_fig(cls,
-                       fig: plt.figure,  # The figure to save,
+    @staticmethod
+    def save_close_fig(fig: plt.figure,  # The figure to save,
                        axs: plt.axes,  # Axes to plot
                        fname: str,  # Name of the output for the fig
                        legend=True,
