@@ -1,3 +1,58 @@
+"""
+Documentation: Particle System Visualization
+Overview:
+
+This module provides tools for visualizing a 2D particle system.
+It mainly comprises a class, DisplaySystem, which is equipped with
+methods to display the initial structure of particles and their
+velocity distribution.
+Dependencies:
+
+    typing: Used for type hints and annotations.
+    matplotlib.pylab: Used for plotting purposes.
+
+Classes:
+
+    DisplaySystem
+
+        Purpose: Handles the visualization aspects of a 2D particle
+                 system.
+
+        Attributes:
+            out_label (str): Prefix for the names of output
+                             visualization files.
+
+        Methods:
+
+            __init__(self, params: dict[str, float],
+                     particles: list["Particle"],
+                     out_label: str = 'frame_i'):
+            Initializes the DisplaySystem and immediately calls
+            visualization methods.
+
+            display_initial_structure(self, params: dict[str, float],
+                                      particles: list["Particle"]):
+            Visualizes the initial positions and velocities of the
+            particles on a 2D plane.
+
+            display_velocity_histogram(self, particles: list["Particle"]):
+            Plots a histogram showcasing the distribution of particle
+            velocities.
+
+            save_close_fig(cls, fig: plt.figure, axs: plt.axes,
+                           fname: str, legend=True,
+                           loc: str = 'upper right', transparent=False):
+            A class method to save a given figure to an output file
+            and then close it.
+
+How to Use:
+
+    Import the necessary classes/modules.
+    Create an instance of the DisplaySystem class with appropriate
+    parameters and a list of Particle objects.
+    Visualizations will be automatically generated upon instantiation.
+"""
+
 import typing
 import matplotlib.pylab as plt
 
