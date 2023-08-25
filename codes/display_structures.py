@@ -97,13 +97,20 @@ class DisplaySystem:
             ax_i.add_patch(circle)
             # Draw an arrow representing velocity. We scale the arrow
             # size for better visualization.
+            if particle.velocity[0] == 0 and particle.velocity[1] == 0:
+                head_width = 0
+                head_length = 0
+            else:
+                head_width = params['particle_radius']/2
+                head_length = params['particle_radius']/3
+                
             scale_factor = 5e-3
             ax_i.arrow(particle.position[0],
                        particle.position[1],
                        particle.velocity[0] * scale_factor,
                        particle.velocity[1] * scale_factor,
-                       head_width=params['particle_radius']/2,
-                       head_length=params['particle_radius']/3,
+                       head_width=head_width,
+                       head_length=head_length,
                        fc='red',
                        ec='red')
 
