@@ -155,9 +155,9 @@ class ParticleIntegrator:
         Compute the new position of a particle considering boundary conditions.
         """
         new_position = np.array(particle.position) + self.delta_t * v_half_dt
+        radius_offset: float = params['particle_radius']
         for i, axis in enumerate(['width', 'height']):
             axis_length = params[axis]
-            radius_offset = params['particle_radius']
 
             # Check for left boundary
             if (exceed_left := (new_position[i] -
