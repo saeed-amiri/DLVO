@@ -156,14 +156,17 @@ class ParticleIntegrator:
         """
         new_position = np.array(particle.position) + self.delta_t * v_half_dt
         for i, axis in enumerate(['width', 'height']):
-            if ((
-                pos_tmp := (new_position[i] - params['particle_radius']
-                ) // params[axis])
-                < 1):
-                new_position[i] += params[axis] * np.abs(pos_tmp)
-            elif ((
-                pos_tmp := (new_position[i] + params['particle_radius']
-                ) // params[axis])
-                > 1):
-                new_position[i] -= params[axis] * np.abs(pos_tmp)
+            axis_length = params[axis]
+            radius_offset = params['particle_radius']
+
+            # Check for left boundary
+            if (exceed_left := (new_position[i] -
+                                radius_offset) // axis_length) < 1:
+                new_position[i] += axis_length * abs(exceed_left)
+
+            # Check for right boundary
+            elif (exceed_right := (new_position[i] +
+                                   radius_offset) // axis_length) > 1:
+                new_position[i] -= axis_length * abs(exceed_right)
+
         return new_position
