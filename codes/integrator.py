@@ -45,7 +45,7 @@ Example:
     }
     particles = [Particle((1,1), (0,0)), Particle((2,2), (0,0))]
     forces = np.array([[0, 0], [0, 0]])
-    
+
     integrator = ParticleIntegrator(params, particles, forces)
 """
 
@@ -54,6 +54,7 @@ import force_copmutation
 from system_initialization import Particle
 from display_structures import DisplaySystem
 from rescaling import Rescaling
+
 
 class ParticleIntegrator:
     """Class to handle the integration of the equations of motion."""
@@ -85,7 +86,7 @@ class ParticleIntegrator:
             rescaling = Rescaling(particles=new_structure,
                                   desired_temperature=desired_temperature,
                                   mass=self.mass)
-            new_structure = rescaling.scale_velocities_to_temperature()
+            new_structure = rescaling.boltzmann_rescale()
             DisplaySystem(params, new_structure, out_label=f'frame{t_step}')
             dlvo = force_copmutation.DLVO(params, new_structure)
             particles = new_structure
@@ -164,15 +165,15 @@ class ParticleIntegrator:
         radius_offset: float = params['particle_radius']
         for i, axis in enumerate(['width', 'height']):
             axis_length = params[axis]
-
             # Check for left boundary
-            if (exceed_left := (new_position[i] -
-                                radius_offset) // axis_length) < 1:
-                new_position[i] += axis_length * abs(exceed_left)
-
+            if ((new_position[i] - radius_offset) < 0 or new_position[i] < 0):
+                new_position[i] += \
+                    axis_length * np.floor(
+                        abs((new_position[i] - radius_offset)//axis_length))
             # Check for right boundary
-            elif (exceed_right := (new_position[i] +
-                                   radius_offset) // axis_length) > 1:
-                new_position[i] -= axis_length * abs(exceed_right)
+            elif new_position[i] > axis_length:
+                new_position[i] -= \
+                    axis_length * np.floor(
+                        abs(((new_position[i] + radius_offset) / axis_length)))
 
         return new_position
