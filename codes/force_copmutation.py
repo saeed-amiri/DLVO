@@ -48,11 +48,11 @@ class DLVO:
                  params: dict[str, float],  # Parameters
                  particles: list["typing.Union[Particle, typing.Any]"]
                  ) -> None:
-        self.hamaker: float = params['hamaker_constant']
-        self.epsilon: float = params['dielectric_constant']
         self.psi: float = params['zeta_potential']
-        self.kappa: float = params['ionic_strength']**0.5  # (Debyelength)^-1
         self.radius: float = params['particle_radius']
+        self.hamaker: float = params['hamaker_constant']
+        self.kappa: float = params['ionic_strength']**0.5
+        self.epsilon: float = params['dielectric_constant']
         self.box_dimensions: tuple[float, float] = \
             (params['width'], params['height'])
         self.forces: np.ndarray = self.compute_forces(particles)
