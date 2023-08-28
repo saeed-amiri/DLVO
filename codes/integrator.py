@@ -53,7 +53,7 @@ import numpy as np
 import force_copmutation
 from system_initialization import Particle
 from display_structures import DisplaySystem
-
+from rescaling import Rescaling
 
 class ParticleIntegrator:
     """Class to handle the integration of the equations of motion."""
@@ -80,6 +80,12 @@ class ParticleIntegrator:
                     particles, forces, params)
             new_vels = self._compute_new_velocities(params, new_pos, hlf_vels)
             new_structure = self._update_particle_structure(new_pos, new_vels)
+            # Scale velocities to desired temperature
+            desired_temperature = params.get('desired_temperature', 300)
+            rescaling = Rescaling(particles=new_structure,
+                                  desired_temperature=desired_temperature,
+                                  mass=self.mass)
+            new_structure = rescaling.scale_velocities_to_temperature()
             DisplaySystem(params, new_structure, out_label=f'frame{t_step}')
             dlvo = force_copmutation.DLVO(params, new_structure)
             particles = new_structure
