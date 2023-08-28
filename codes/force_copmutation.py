@@ -167,7 +167,9 @@ def test_dlvo_class() -> None:
         'dielectric_constant': 80.8,
         'zeta_potential': -25e-3,  # Surface potential
         'ionic_strength': 1,
-        'particle_radius': 1
+        'particle_radius': 1,
+        'width': 20,
+        'height': 30
     }
 
     # Two particles located at different positions
